@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vendach • Conditions d'utilisation</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>" type="image/svg+xml">
+</head>
+
+<style>
+    :root {
+        --primary: linear-gradient(135deg, #5988e6 0%, #032242 100%);
+        --primary-dark: #032242;
+        --secondary: #f8fafc;
+        --accent: #10b981;
+        --text-primary: #1e4c8f;
+        --text-secondary: #0073e0;
+        --text-muted: #718096;
+        --border: #e2e8f0;
+        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        --border-radius: 16px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: var(--text-primary);
+        line-height: 1.7;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.41) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(48, 62, 255, 0.25) 0%, transparent 50%);
+        z-index: -1;
+        animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        33% { transform: translateY(-20px) rotate(1deg); }
+        66% { transform: translateY(-10px) rotate(-1deg); }
+    }
+
+    /* Modern Header */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        z-index: 100;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: var(--transition);
+        box-shadow: var(--shadow);
+    }
+
+    .header.scrolled {
+        box-shadow: var(--shadow-lg);
+        background: rgba(255, 255, 255, 0.98);
+    }
+
+    .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo {
+        width: 45px;
+        height: 45px;
+        background: var(--primary);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 18px;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .logo:hover {
+        transform: scale(1.05) rotate(-5deg);
+    }
+
+    .brand-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: var(--primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .menu-toggle {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        transition: var(--transition);
+    }
+
+    .menu-toggle:hover {
+        background: var(--secondary);
+        transform: scale(1.1);
+    }
+
+    /* Navigation Menu */
+    .nav-menu {
+        position: fixed;
+        top: 80px;
+        right: -300px;
+        width: 300px;
+        height: calc(100vh - 80px);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-left: 1px solid var(--border);
+        padding: 2rem;
+        transition: var(--transition);
+        z-index: 99;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .nav-menu a {
+        display: block;
+        padding: 1rem 0;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 500;
+        border-bottom: 1px solid var(--border);
+        transition: var(--transition);
+    }
+
+    .nav-menu a:hover {
+        color: var(--primary-dark);
+        transform: translateX(10px);
+    }
+
+    /* Main Container */
+    .container {
+        max-width: 900px;
+        margin: 120px auto 60px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+        text-align: center;
+        padding: 4rem 3rem 2rem;
+        background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        animation: rotate 30s linear infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: var(--primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .hero .subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .last-updated {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--accent);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        box-shadow: var(--shadow);
+    }
+
+    /* Content Styles */
+    .content {
+        padding: 0 3rem 3rem;
+    }
+
+    .section {
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid transparent;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .section:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+        border-left-color: var(--primary-dark);
+    }
+
+    .section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-radius: 0 0 0 100px;
+        transition: var(--transition);
+        opacity: 0;
+    }
+
+    .section:hover::before {
+        opacity: 1;
+    }
+
+    .section-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--primary);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow);
+    }
+
+    h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 1.5rem 0 1rem;
+    }
+
+    p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    li {
+        position: relative;
+        padding: 0.75rem 0 0.75rem 2rem;
+        color: var(--text-secondary);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: var(--transition);
+    }
+
+    li:hover {
+        background: var(--secondary);
+        transform: translateX(8px);
+    }
+
+    li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        top: 0.75rem;
+        width: 20px;
+        height: 20px;
+        background: var(--accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    /* Links */
+    a {
+        color: var(--primary-dark);
+        text-decoration: none;
+        font-weight: 500;
+        position: relative;
+        transition: var(--transition);
+    }
+
+    a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background: var(--primary-dark);
+        transition: var(--transition);
+    }
+
+    a:hover::after {
+        width: 100%;
+    }
+
+    /* Contact Section */
+    .contact-section {
+        background: linear-gradient(135deg, #667eea11 0%, #764ba211 100%);
+        border: 1px solid var(--border);
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .contact-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--primary);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .contact-button:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .contact-button::after {
+        display: none;
+    }
+
+    /* Progress Bar */
+    .reading-progress {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        width: 0%;
+        height: 3px;
+        background: var(--primary);
+        z-index: 101;
+        transition: width 0.3s ease;
+    }
+
+    /* Floating Action Button */
+    .fab {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        z-index: 98;
+    }
+
+    .fab:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header {
+            padding: 1rem;
+        }
+
+        .container {
+            margin: 100px 1rem 2rem;
+        }
+
+        .hero {
+            padding: 3rem 2rem 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .content {
+            padding: 0 2rem 2rem;
+        }
+
+        .section {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-menu {
+            width: 100%;
+            right: -100%;
+        }
+
+        .fab {
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero h1 {
+            font-size: 2rem;
+        }
+
+        .hero .subtitle {
+            font-size: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        .section {
+            padding: 1rem;
+        }
+
+        .content {
+            padding: 0 1rem 2rem;
+        }
+    }
+
+    /* Animations */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeIn 0.6s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .section:nth-child(odd) {
+        animation-delay: 0.1s;
+    }
+
+    .section:nth-child(even) {
+        animation-delay: 0.2s;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --text-primary: #000000ff;
+            --text-secondary: #111b29ff;
+            --text-muted: #cbd5e0;
+            --secondary: #5a606bff;
+            --border: #4a5568;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a1a9b8ff 0%, #edeff2ff 100%);
+        }
+
+        .header,
+        .nav-menu,
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .section {
+            background: #ffffffff;
+        }
+    }
+</style>
+
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="reading-progress"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="logo-section">
+            <div class="logo">
+                <img src="http://localhost/TP%20JAVA/uploads/ChatGPT Image Apr 3, 2025, 09_37_18 PM.png" alt="Logo" style="width: 70%; height: 70%;">
+            </div>
+            <div class="brand-text">Vendach</div>
+        </div>
+        <button class="menu-toggle" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="nav-menu">
+        <a href="#accueil"><i class="fas fa-home"></i> Accueil</a>
+        <a href="#conditions"><i class="fas fa-file-contract"></i> Conditions</a>
+        <a href="#confidentialite"><i class="fas fa-shield-alt"></i> Confidentialité</a>
+        <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+                <h1 class="fade-in">Conditions d'utilisation</h1>
+                <p class="subtitle fade-in">Découvrez les règles qui régissent l'utilisation de notre plateforme Vendach</p>
+                <div class="last-updated fade-in">
+                    <i class="fas fa-calendar-alt"></i>
+                    Dernière mise à jour : 20 juin 2024
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h2>Bienvenue sur Vendach</h2>
+                <p>En utilisant notre site web et nos services, vous acceptez de vous conformer aux présentes conditions d'utilisation. Veuillez les lire attentivement avant d'utiliser notre plateforme innovative.</p>
+            </div>
+
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>1. Acceptation des conditions</h2>
+                <p>En accédant à Vendach, vous acceptez d'être lié par ces conditions d'utilisation, ainsi que par notre politique de confidentialité. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre site.</p>
+            </div>
+
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h2>2. Utilisation du site</h2>
+                <p>Vous vous engagez à utiliser Vendach uniquement à des fins légales et conformément à toutes les lois applicables. Vous ne devez pas utiliser notre site pour :</p>
+                <ul>
+                    <li>Publier ou transmettre du contenu illégal, nuisible, menaçant, abusif, harcelant, diffamatoire, vulgaire, obscène, haineux ou autrement répréhensible</li>
+                    <li>Usurper l'identité de toute personne ou entité</li>
+                    <li>Interférer avec le fonctionnement de notre site ou perturber l'expérience des autres utilisateurs</li>
+                    <li>Tenter d'accéder à des zones restreintes de notre site sans autorisation</li>
+                </ul>
+            </div>
+
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-copyright"></i>
+                </div>
+                <h2>3. Propriété intellectuelle</h2>
+                <p>Tout le contenu présent sur Vendach, y compris mais sans s'y limiter, les textes, graphiques, logos, images et logiciels, est la propriété de Vendach ou de ses concédants de licence et est protégé par les lois sur la propriété intellectuelle. Vous ne pouvez pas utiliser ce contenu sans notre autorisation écrite préalable.</p>
+            </div>
+
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <h2>4. Comptes utilisateur</h2>
+                <p>Pour accéder à certaines fonctionnalités de Vendach, vous devez créer un compte. Vous êtes responsable de la confidentialité de vos informations de connexion et de toutes les activités qui se produisent sous votre compte. Veuillez nous informer immédiatement de toute utilisation non autorisée de votre compte.</p>
+            </div>
+
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h2>5. Modifications des conditions</h2>
+                <p>Nous nous réservons le droit de modifier ces conditions d'utilisation à tout moment. Les modifications seront publiées sur cette page avec une date de mise à jour révisée. Votre utilisation continue de Vendach après la publication des modifications constitue votre acceptation des nouvelles conditions.</p>
+            </div>
+
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2>6. Limitation de responsabilité</h2>
+                <p>Vendach ne sera pas responsable des dommages directs, indirects, accessoires, spéciaux ou consécutifs découlant de votre utilisation ou de votre incapacité à utiliser notre site, même si nous avons été informés de la possibilité de tels dommages.</p>
+            </div>
+
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <h2>7. Résiliation</h2>
+                <p>Nous nous réservons le droit de suspendre ou de résilier votre accès à Vendach à tout moment, sans préavis, pour toute raison, y compris en cas de violation de ces conditions d'utilisation.</p>
+            </div>
+
+            <div class="section fade-in">
+                <div class="section-icon">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <h2>8. Droit applicable</h2>
+                <p>Ces conditions d'utilisation sont régies par les lois en vigueur dans le pays où Vendach est basé, sans égard aux principes de conflits de lois.</p>
+            </div>
+
+            <div class="section fade-in contact-section">
+                <div class="section-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h2>9. Contact</h2>
+                <p>Si vous avez des questions concernant ces conditions d'utilisation, n'hésitez pas à nous contacter.</p>
+                <button class="contact-button" onclick="window.location.href='mailto:contact@vendach.com'">
+                    <i class="fas fa-paper-plane"></i>
+                    Nous contacter
+                </button>
+            </div>
+
+            <div class="section fade-in" style="text-align: center; background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);">
+                <h2 style="margin-bottom: 1rem;">
+                    <i class="fas fa-heart" style="color: #e53e3e;"></i>
+                    Merci d'utiliser Vendach !
+                </h2>
+                <p style="font-size: 1.1rem; color: var(--text-secondary);">Votre confiance est notre priorité.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="scrollToTop()" title="Retour en haut">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        // Menu Toggle
+        function toggleMenu() {
+            const menu = document.getElementById('nav-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('nav-menu');
+            const toggle = document.querySelector('.menu-toggle');
+            
+            if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Reading progress bar
+        window.addEventListener('scroll', function() {
+            const progress = document.getElementById('reading-progress');
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight - windowHeight;
+            const scrollTop = window.pageYOffset;
+            const scrollPercent = (scrollTop / documentHeight) * 100;
+            
+            progress.style.width = scrollPercent + '%';
+        });
+
+        // Smooth scroll to top
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Animate sections on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                section.style.animationDelay = `${index * 0.1}s`;
+                section.classList.add('fade-in');
+                observer.observe(section);
+            });
+        });
+
+        // Add loading animation
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Enhanced hover effects
+        document.querySelectorAll('.section').forEach(section => {
+            section.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            section.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('nav-menu').classList.remove('active');
+            }
+        });
+
+        // Add particle effect to hero section
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: 4px;
+                height: 4px;
+                background: rgba(102, 126, 234, 0.6);
+                border-radius: 50%;
+                pointer-events: none;
+                animation: float-particle 4s linear forwards;
+            `;
+            
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = '100%';
+            
+            document.querySelector('.hero').appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 4000);
+        }
+
+        // Add CSS for particle animation
+        const particleStyle = document.createElement('style');
+        particleStyle.textContent = `
+            @keyframes float-particle {
+                to {
+                    transform: translateY(-100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(particleStyle);
+
+        // Create particles periodically
+        setInterval(createParticle, 2000);
+    </script>
+</body>
+</html>
